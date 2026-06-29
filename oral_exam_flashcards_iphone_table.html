@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#3157d5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="口述試験対策">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<title>新領域 特別口述試験対策</title>
+<style>
+:root{
+  --bg:#f4f6fb; --panel:#ffffff; --ink:#172033; --muted:#64708a;
+  --line:#dce2ee; --accent:#3157d5; --accent2:#e9eeff;
+  --good:#157347; --warn:#9a6700; --bad:#b42318; --shadow:0 12px 32px rgba(25,42,89,.10);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI","Hiragino Sans","Yu Gothic UI",sans-serif;background:var(--bg);color:var(--ink)}
+button,select,input{font:inherit}
+button{cursor:pointer}
+.app{max-width:1180px;margin:auto;padding:22px}
+.hero{background:linear-gradient(125deg,#172b6a,#3157d5);color:white;padding:24px 26px;border-radius:20px;box-shadow:var(--shadow)}
+.hero h1{font-size:clamp(22px,3vw,34px);margin:0 0 8px}
+.hero p{margin:0;color:#e1e8ff;line-height:1.65}
+.topstats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}
+.stat{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);padding:10px 12px;border-radius:12px}
+.stat b{display:block;font-size:22px}.stat span{font-size:12px;color:#e1e8ff}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+.tab{border:1px solid var(--line);background:white;color:var(--ink);border-radius:11px;padding:10px 15px;font-weight:700}
+.tab.active{background:var(--accent);color:white;border-color:var(--accent)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.study-layout{display:grid;grid-template-columns:260px 1fr;gap:16px}
+.filters{padding:18px;height:max-content}
+.filters h3{margin:0 0 14px}
+.field{margin-bottom:14px}.field label{display:block;font-size:12px;font-weight:800;color:var(--muted);margin-bottom:6px}
+.field select,.field input[type="search"]{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:10px;background:white}
+.check{display:flex;align-items:center;gap:8px;font-size:14px;margin:10px 0}
+.primary,.secondary,.ghost,.rate{border:0;border-radius:11px;padding:10px 14px;font-weight:800}
+.primary{background:var(--accent);color:white}
+.secondary{background:var(--accent2);color:var(--accent)}
+.ghost{background:#f1f3f8;color:var(--ink)}
+.full{width:100%}
+.small{font-size:12px;padding:8px 10px}
+.study{padding:22px;min-height:510px}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{font-size:12px;font-weight:800;padding:5px 9px;border-radius:999px;background:#eef1f7;color:#4a566f}
+.chip.s{background:#ffe4e1;color:#9f241d}.chip.a{background:#fff1c8;color:#7a5400}.chip.past{background:#e6f5ec;color:#12633d}
+.counter{font-size:13px;color:var(--muted);white-space:nowrap}
+.question{font-size:clamp(23px,3vw,34px);line-height:1.5;margin:34px 0 24px;font-weight:850}
+.prompt-actions{display:flex;gap:9px;flex-wrap:wrap}
+.answer{margin-top:22px;border-top:1px solid var(--line);padding-top:20px}
+.answer.hidden{display:none}
+.answer h3{margin:0 0 8px;color:var(--accent)}
+.answer p{line-height:1.8;margin:6px 0 14px}
+.box{padding:13px 15px;border-radius:11px;margin:11px 0;line-height:1.7}
+.formula{background:#f1f4ff;border-left:4px solid var(--accent);font-family:"Cambria Math","Times New Roman",serif;font-size:17px}
+.follow{background:#eef8f2;border-left:4px solid var(--good)}
+.pitfall{background:#fff1ef;border-left:4px solid var(--bad)}
+.variants{background:#f6f7fa;color:#4d5870}
+.rates{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:20px}
+.rate{padding:12px 8px;color:white}.r0{background:#b42318}.r1{background:#b26a00}.r2{background:#16794b}.r3{background:#3157d5}
+.empty{text-align:center;padding:70px 20px;color:var(--muted)}
+.progressbar{height:8px;background:#e8ebf2;border-radius:999px;overflow:hidden;margin:15px 0 4px}
+.progressbar>div{height:100%;background:var(--accent);width:0}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:16px;border-bottom:1px solid var(--line)}
+.toolbar input{flex:1;min-width:220px;padding:10px 12px;border:1px solid var(--line);border-radius:10px}
+.table-wrap{overflow:auto;max-height:650px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{position:sticky;top:0;background:#f8f9fc;z-index:1}
+td.qcell{min-width:300px;font-weight:700}
+.badge{display:inline-block;padding:3px 7px;border-radius:8px;background:#eef1f7;font-size:11px;font-weight:800}
+.details-row{display:none;background:#fbfcff}.details-row.open{display:table-row}.details-content{line-height:1.75;max-width:850px}
+.mock{padding:24px;min-height:500px}
+.mock-setup{max-width:620px;margin:30px auto}
+.mock-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mock-question{font-size:30px;line-height:1.5;font-weight:850;margin:45px 0}
+.timer{font-size:34px;font-weight:900;text-align:right}.timer.low{color:var(--bad)}
+.mock-score{text-align:center;padding:50px}.mock-score strong{font-size:56px;color:var(--accent)}
+.guide{padding:24px;line-height:1.8}
+.guide h2{margin-top:0}.guide h3{margin-top:28px}
+.priority-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.priority-card{padding:14px;border:1px solid var(--line);border-radius:12px}
+.kbd{display:inline-block;border:1px solid #bcc4d3;border-bottom-width:3px;border-radius:6px;padding:1px 7px;background:white;font-size:12px;font-weight:800}
+.footer{color:var(--muted);font-size:12px;text-align:center;margin:20px}
+.toast{position:fixed;right:20px;bottom:20px;background:#172033;color:white;padding:11px 15px;border-radius:10px;opacity:0;transform:translateY(12px);transition:.2s;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+@media(max-width:800px){
+  .app{padding:12px}.study-layout{grid-template-columns:1fr}.filters{display:grid;grid-template-columns:1fr 1fr;gap:8px}.filters h3,.filters .full,.filters .check{grid-column:1/-1}
+  .topstats{grid-template-columns:1fr 1fr}.rates{grid-template-columns:1fr 1fr}.priority-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:500px){.filters{display:block}.mock-grid{grid-template-columns:1fr}.question,.mock-question{font-size:24px}}
+
+/* iPhone / PWA adjustments */
+html{-webkit-text-size-adjust:100%;touch-action:manipulation}
+body{min-height:100dvh;padding-bottom:env(safe-area-inset-bottom)}
+button,select,input{-webkit-tap-highlight-color:transparent}
+button{min-height:44px}
+.install-tip{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff7d6;border:1px solid #efd36b;padding:12px 14px;margin:14px 0;border-radius:14px;box-shadow:var(--shadow)}
+.install-tip div{display:flex;flex-direction:column;gap:3px;line-height:1.45}
+.install-tip span{font-size:12px;color:#66561d}
+.install-tip button{border:0;background:#fff;color:#6a5815;border-radius:10px;padding:8px 12px;font-weight:800;white-space:nowrap}
+@supports(padding:max(0px)){
+  .app{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}
+}
+@media(max-width:800px){
+  body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+  .app{padding-top:max(10px,env(safe-area-inset-top));padding-bottom:12px}
+  .hero{padding:18px;border-radius:16px}
+  .hero p{font-size:13px;line-height:1.55}
+  .topstats{margin-top:12px}
+  .stat{padding:8px 10px}.stat b{font-size:19px}
+  .tabs{
+    position:fixed;left:0;right:0;bottom:0;z-index:1000;
+    display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:0;
+    padding:7px max(7px,env(safe-area-inset-right)) calc(7px + env(safe-area-inset-bottom)) max(7px,env(safe-area-inset-left));
+    background:rgba(255,255,255,.96);border-top:1px solid var(--line);
+    box-shadow:0 -8px 24px rgba(25,42,89,.12);backdrop-filter:blur(16px);
+  }
+  .tab{border:0;background:transparent;border-radius:10px;padding:9px 3px;min-height:46px;font-size:12px}
+  .tab.active{background:var(--accent2);color:var(--accent)}
+  .panel{border-radius:15px;box-shadow:0 6px 20px rgba(25,42,89,.08)}
+  .study{padding:17px;min-height:0}
+  .filters{padding:14px}
+  .question{margin:25px 0 20px;line-height:1.55}
+  .prompt-actions{display:grid;grid-template-columns:1fr 1fr}
+  .prompt-actions .primary{grid-column:1/-1}
+  .answer{padding-bottom:8px}
+  .rates{
+    position:sticky;bottom:calc(65px + env(safe-area-inset-bottom));z-index:15;
+    margin-left:-8px;margin-right:-8px;padding:8px;
+    background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:14px;
+    box-shadow:0 8px 25px rgba(25,42,89,.14);backdrop-filter:blur(14px);
+  }
+  .rate{min-height:50px}
+  .toolbar{position:sticky;top:0;z-index:10;background:white;border-radius:15px 15px 0 0}
+  .table-wrap{max-height:none}
+  .mock{padding:17px}
+  .mock-question{margin:32px 0}
+  .footer{margin-bottom:8px}
+}
+@media(max-width:430px){
+  .hero h1{font-size:22px}
+  .hero p{display:none}
+  .topstats{grid-template-columns:repeat(4,1fr);gap:5px}
+  .stat{padding:7px 5px;text-align:center}.stat b{font-size:17px}.stat span{font-size:9px}
+  .install-tip{align-items:flex-start}
+  .study-layout{gap:10px}
+  .filters .field{margin-bottom:10px}
+  .card-head{align-items:flex-start}.counter{font-size:11px}
+  .chips{gap:4px}.chip{font-size:10px;padding:4px 7px}
+  .question{font-size:23px}
+  .rates{grid-template-columns:1fr 1fr}
+  th,td{padding:10px 9px}
+}
+@media(display-mode:standalone){
+  .install-tip{display:none!important}
+  .hero{margin-top:2px}
+}
+
+
+.table-note{padding:9px 16px;color:var(--muted);font-size:12px;border-bottom:1px solid var(--line)}
+.qa-table{min-width:1500px}
+.qa-table th,.qa-table td{white-space:normal;line-height:1.65}
+.qa-table .rank-col{width:52px;text-align:center}
+.qa-table .priority-col{width:55px;text-align:center}
+.qa-table .category-col{min-width:145px}
+.qa-table .question-col{min-width:270px;font-weight:800}
+.qa-table .answer-col{min-width:390px}
+.qa-table .formula-col{min-width:210px;font-family:"Cambria Math","Times New Roman",serif;background:#f8f9ff}
+.qa-table .follow-col{min-width:250px;background:#f6fbf8}
+.qa-table .pitfall-col{min-width:250px;background:#fff8f6}
+.qa-table .source-col,.qa-table .mastery-col{width:70px;text-align:center}
+.qa-table.compact .detail-col,.qa-table.compact td.detail-col{display:none}
+.qa-table.compact{min-width:980px}
+.qa-table tbody tr:hover{background:#f7f9ff}
+@media print{
+  body{background:white!important;padding:0!important}
+  .hero,.tabs,.toolbar,.table-note,.footer,.install-tip{display:none!important}
+  .app{max-width:none!important;padding:0!important}
+  .view[hidden]{display:none!important}
+  #browseView{display:block!important;border:0!important;box-shadow:none!important}
+  .table-wrap{overflow:visible!important;max-height:none!important}
+  .qa-table{min-width:0!important;font-size:8.5pt}
+  .qa-table th,.qa-table td{padding:5px 6px;line-height:1.35}
+  .qa-table th{position:static}
+  .qa-table .detail-col,.qa-table td.detail-col{display:table-cell!important}
+  @page{size:A4 landscape;margin:8mm}
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <section class="hero">
+    <h1>東京大学新領域・特別口述試験対策</h1>
+    <p>過去レポを統合した一問一答。頻出度、追質問されやすさ、基礎重要度の順に学習し、自己評価から復習順を自動調整します。</p>
+    <div class="topstats">
+      <div class="stat"><b id="statTotal">0</b><span>収録カード</span></div>
+      <div class="stat"><b id="statSeen">0</b><span>学習済み</span></div>
+      <div class="stat"><b id="statMastered">0</b><span>定着カード</span></div>
+      <div class="stat"><b id="statDue">0</b><span>今日の復習</span></div>
+    </div>
+  </section>
+
+  <section id="installTip" class="install-tip" hidden>
+    <div>
+      <b>iPhoneにアプリとして追加できます</b>
+      <span>Safariの共有ボタン →「ホーム画面に追加」→「Webアプリとして開く」をオン</span>
+    </div>
+    <button type="button" onclick="document.getElementById('installTip').hidden=true">閉じる</button>
+  </section>
+
+  <nav class="tabs">
+    <button class="tab active" data-view="studyView">優先学習</button>
+    <button class="tab" data-view="browseView">一問一答表</button>
+    <button class="tab" data-view="mockView">口述模試</button>
+    <button class="tab" data-view="guideView">使い方</button>
+  </nav>
+
+  <section id="studyView" class="view study-layout">
+    <aside class="panel filters">
+      <h3>学習条件</h3>
+      <div class="field"><label>分野</label><select id="categoryFilter"></select></div>
+      <div class="field"><label>優先度</label>
+        <select id="priorityFilter">
+          <option value="all">すべて</option><option value="S">S：最優先</option><option value="A">A：重要</option><option value="B">B：標準</option><option value="C">C：低頻度</option>
+        </select>
+      </div>
+      <div class="field"><label>出典</label>
+        <select id="sourceFilter"><option value="all">すべて</option><option value="past">過去問</option><option value="added">追加問題</option></select>
+      </div>
+      <label class="check"><input type="checkbox" id="dueOnly"> 今日が復習日の問題のみ</label>
+      <button class="primary full" id="startStudy">この条件で開始</button>
+      <button class="secondary full" id="shuffleStudy" style="margin-top:8px">順番をシャッフル</button>
+      <div style="border-top:1px solid var(--line);margin:16px 0"></div>
+      <button class="ghost full small" id="exportProgress">進捗を書き出す</button>
+      <label class="ghost full small" style="display:block;text-align:center;margin-top:8px">進捗を読み込む<input id="importProgress" type="file" accept=".json" hidden></label>
+      <button class="ghost full small" id="resetProgress" style="margin-top:8px">進捗を初期化</button>
+    </aside>
+
+    <main class="panel study">
+      <div id="studyContent"></div>
+    </main>
+  </section>
+
+  <section id="browseView" class="view panel" hidden>
+    <div class="toolbar">
+      <input id="browseSearch" type="search" placeholder="用語・質問・回答を検索">
+      <select id="browseCategory"></select>
+      <select id="browsePriority"><option value="all">全優先度</option><option>S</option><option>A</option><option>B</option><option>C</option></select>
+      <button class="secondary small" id="toggleCompact">簡潔表示</button>
+      <button class="secondary small" id="printTable">印刷・PDF</button>
+      <button class="secondary small" id="exportCsv">表示中をCSV保存</button>
+    </div>
+    <div class="table-note">質問と回答を常に表示します。iPhoneでは表を左右にスクロールできます。</div>
+    <div class="table-wrap"><table class="qa-table">
+      <thead><tr>
+        <th>順位</th><th>優先</th><th>分野</th><th>質問</th><th>回答</th>
+        <th class="detail-col">式</th><th class="detail-col">追質問・補足</th>
+        <th class="detail-col">誤答注意</th><th>出典</th><th>定着</th>
+      </tr></thead>
+      <tbody id="browseBody"></tbody>
+    </table></div>
+  </section>
+
+  <section id="mockView" class="view panel mock" hidden>
+    <div id="mockSetup" class="mock-setup">
+      <h2>口述模試</h2>
+      <p>問題を声に出して答え、制限時間後に模範回答を確認します。高優先度ほど出やすく設定されています。</p>
+      <div class="mock-grid">
+        <div class="field"><label>問題数</label><select id="mockCount"><option>5</option><option selected>10</option><option>20</option></select></div>
+        <div class="field"><label>1問の制限時間</label><select id="mockTime"><option>20</option><option selected>30</option><option>45</option><option>60</option></select></div>
+        <div class="field"><label>分野</label><select id="mockCategory"></select></div>
+        <div class="field"><label>出題範囲</label><select id="mockSource"><option value="all">過去問＋追加</option><option value="past">過去問のみ</option></select></div>
+      </div>
+      <button class="primary full" id="startMock">模試を開始</button>
+    </div>
+    <div id="mockRun" hidden></div>
+    <div id="mockResult" hidden></div>
+  </section>
+
+  <section id="guideView" class="view panel guide" hidden>
+    <h2>使い方</h2>
+    <p>最初は「優先度S・A」を中心に、質問を見たら30秒以内で声に出して答えます。答えを表示した後、実際に言えた程度で評価してください。カードの順序は、未学習・復習日・優先度・過去問頻度を考慮します。</p>
+    <div class="priority-grid">
+      <div class="priority-card"><b>S 最優先</b><br>複数レポで反復。式や追質問まで必須。</div>
+      <div class="priority-card"><b>A 重要</b><br>実出題あり、または頻出分野の派生。</div>
+      <div class="priority-card"><b>B 標準</b><br>単発出題、周辺知識、説明補強。</div>
+      <div class="priority-card"><b>C 低頻度</b><br>ニッチだが実出題された内容。</div>
+    </div>
+    <h3>推奨する答え方</h3>
+    <p><b>定義 → 式 → 物理的意味 → 例</b>の順に、まず20〜30秒で答えます。質問が曖昧なら「〜という意味でしょうか」と定義を確認します。得意科目を自分から挙げると、その分野が深掘りされるため、周辺式まで準備してください。</p>
+    <h3>キーボード</h3>
+    <p><span class="kbd">Space</span> 答えを表示　<span class="kbd">1</span> 知らない　<span class="kbd">2</span> あやしい　<span class="kbd">3</span> 言えた　<span class="kbd">4</span> 完璧　<span class="kbd">S</span> 問題を読み上げ</p>
+    <h3>復習間隔</h3>
+    <p>「知らない」は同じ学習回の後半へ戻し、「あやしい」は短い間隔、「言えた」「完璧」は徐々に間隔を広げます。進捗はこのブラウザ内に自動保存されます。</p>
+  </section>
+
+  <div class="footer">単一HTMLで動作します。インターネット接続は不要です。</div>
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+const CARDS = [{"id": "c001", "category": "数学・線形代数", "question": "固有値・固有ベクトルとは何ですか？", "answer": "正方行列 A に対し、0でないベクトル v が Av=λv を満たすとき、λを固有値、vを固有ベクトルといいます。行列による変換で向きが変わらず、倍率だけがλになる方向です。", "formula": "Av=λv,  v≠0", "followup": "物理的には、振動モード・主軸・安定性など、系に固有な方向とその大きさを表します。", "pitfalls": "固有ベクトルに零ベクトルは含みません。「射影そのもの」ではありません。", "priority": "S", "source": "past", "frequency": 9, "tags": [], "variants": ["行列の固有値とは？", "固有値の物理的意味は？", "固有値・固有ベクトルって何？"], "score": 495, "order": 1}, {"id": "c056", "category": "ロボティクス", "question": "順運動学と逆運動学とは何ですか？", "answer": "順運動学は関節変数から手先の位置・姿勢を求める問題です。逆運動学は目標の手先位置・姿勢から関節変数を求める問題で、解が複数、存在しない、特異になる場合があります。", "formula": "", "followup": "", "pitfalls": "", "priority": "S", "source": "past", "frequency": 8, "tags": [], "variants": [], "score": 485, "order": 2}, {"id": "c025", "category": "機械力学・振動", "question": "慣性モーメントとは何ですか？", "answer": "ある回転軸まわりの質量分布によって決まる、角加速度の生じにくさを表す量です。回転運動における質量に対応します。", "formula": "I=∫r²dm,  τ=Iα（固定軸）", "followup": "", "pitfalls": "", "priority": "S", "source": "past", "frequency": 6, "tags": [], "variants": [], "score": 465, "order": 3}, {"id": "c047", "category": "FEM・数値解析", "question": "有限要素法とは何ですか？", "answer": "連続体を有限個の要素に分割し、要素内の変位などを形状関数で近似して、偏微分方程式の境界値問題を連立代数方程式に変換して解く数値解析法です。", "formula": "K u = f", "followup": "", "pitfalls": "", "priority": "S", "source": "past", "frequency": 5, "tags": [], "variants": [], "score": 455, "order": 4}, {"id": "c058", "category": "ロボティクス", "question": "同次座標とは何ですか？", "answer": "n次元の点を1次元増やして表し、平行移動を含むアフィン変換を行列積として統一的に扱う表現です。3次元点pは通常[pᵀ,1]ᵀで表します。", "formula": "p_h=[x y z 1]ᵀ", "followup": "", "pitfalls": "", "priority": "S", "source": "past", "frequency": 5, "tags": [], "variants": [], "score": 455, "order": 5}, {"id": "c059", "category": "ロボティクス", "question": "同次座標変換行列とは何ですか？", "answer": "回転Rと並進pを1つの4×4行列にまとめ、座標系間の位置・姿勢変換を表す行列です。複数の変換を行列積で合成できます。", "formula": "T=[[R,p],[0 0 0,1]],  p'_h=T p_h", "followup": "", "pitfalls": "", "priority": "S", "source": "past", "frequency": 5, "tags": [], "variants": ["同次座標変換とは？", "同時座標変換とは？"], "score": 455, "order": 6}, {"id": "c065", "category": "制御", "question": "伝達関数とは何ですか？", "answer": "初期値を0とした線形時不変系で、出力のラプラス変換を入力のラプラス変換で割ったものです。入力から出力への周波数領域での関係を表します。", "formula": "G(s)=Y(s)/U(s)", "followup": "", "pitfalls": "", "priority": "S", "source": "past", "frequency": 5, "tags": [], "variants": [], "score": 455, "order": 7}, {"id": "c066", "category": "制御", "question": "連続時間LTIシステムが安定かどうかはどう判定しますか？", "answer": "伝達関数の全ての極が複素平面の左半平面、つまり実部が負なら漸近安定です。ラウス・フルビッツ、根軌跡、ナイキスト線図、ボード線図などでも判定できます。", "formula": "", "followup": "", "pitfalls": "虚部が負ではなく、実部が負です。", "priority": "S", "source": "past", "frequency": 5, "tags": [], "variants": [], "score": 455, "order": 8}, {"id": "c011", "category": "数学・微分方程式", "question": "微分方程式の一般解とは何ですか？", "answer": "微分方程式を満たし、方程式の階数に応じた任意定数を含む解の族です。初期条件や境界条件を与えると、通常は特定の特殊解が決まります。", "formula": "", "followup": "", "pitfalls": "", "priority": "S", "source": "past", "frequency": 5, "tags": [], "variants": [], "score": 455, "order": 9}, {"id": "c002", "category": "数学・線形代数", "question": "行列の対角化とは何ですか？", "answer": "n次正方行列Aを、正則行列Pを用いて P⁻¹AP=D とし、Dを対角行列にすることです。Pの列に固有ベクトルを並べると、Dの対角成分に対応する固有値が並びます。", "formula": "P⁻¹AP=D  ⇔  A=PDP⁻¹", "followup": "対角化すると、Aのべき乗や線形微分方程式の計算が簡単になります。", "pitfalls": "「行列を行基本変形して対角にする」こととは別です。", "priority": "S", "source": "past", "frequency": 5, "tags": [], "variants": [], "score": 455, "order": 10}, {"id": "c034", "category": "材料力学・設計", "question": "ヤング率とは何ですか？", "answer": "線形弾性域における垂直応力と垂直ひずみの比例係数で、材料の引張・圧縮に対する変形しにくさを表します。", "formula": "E=σ/ε  または σ=Eε", "followup": "", "pitfalls": "梁のたわみ式に出るEIのIは断面二次モーメントで、ヤング率そのものの定義ではありません。", "priority": "S", "source": "past", "frequency": 5, "tags": [], "variants": [], "score": 455, "order": 11}, {"id": "c021", "category": "機械力学・振動", "question": "固有振動数とは何ですか？", "answer": "外力がない自由振動で、系が固有に振動する周波数です。質量と剛性で決まり、1自由度の無減衰系では ωₙ=√(k/m) です。", "formula": "ωₙ=√(k/m),  fₙ=ωₙ/(2π)", "followup": "", "pitfalls": "", "priority": "S", "source": "past", "frequency": 5, "tags": [], "variants": [], "score": 455, "order": 12}, {"id": "c022", "category": "機械力学・振動", "question": "共振周波数とは何ですか？", "answer": "周期外力を加えたとき、定常応答振幅が最大になる加振周波数です。減衰が小さい系では固有振動数に近くなりますが、厳密には同じとは限りません。", "formula": "1自由度粘性減衰系: ωᵣ=ωₙ√(1-2ζ²)（ζ<1/√2）", "followup": "", "pitfalls": "", "priority": "S", "source": "past", "frequency": 5, "tags": [], "variants": [], "score": 455, "order": 13}, {"id": "c031", "category": "機械力学・振動", "question": "ラグランジュの運動方程式とは何ですか？", "answer": "一般化座標qᵢを用い、ラグランジアンL=T−Vから運動方程式を得る方法です。拘束のある多自由度系を、力の成分を逐一分解せず記述できます。", "formula": "d/dt(∂L/∂q̇ᵢ)−∂L/∂qᵢ=Qᵢ,  L=T−V", "followup": "", "pitfalls": "ラグランジアンは「位置エネルギー−運動エネルギー」ではなく T−V です。", "priority": "S", "source": "past", "frequency": 5, "tags": [], "variants": [], "score": 455, "order": 14}, {"id": "c087", "category": "流体力学", "question": "レイノルズ数とは何ですか？", "answer": "慣性力と粘性力の比を表す無次元数で、流れが層流か乱流か、また模型実験の相似性を考える指標です。", "formula": "Re=ρUL/μ=UL/ν", "followup": "", "pitfalls": "", "priority": "S", "source": "past", "frequency": 5, "tags": [], "variants": [], "score": 455, "order": 15}, {"id": "c075", "category": "計測・信号処理", "question": "標本化と量子化の違いは何ですか？", "answer": "標本化は連続時間信号を離散的な時刻で取り出す操作です。量子化は各標本値の連続的な振幅を、有限個の離散レベルに丸める操作です。", "formula": "", "followup": "", "pitfalls": "", "priority": "S", "source": "past", "frequency": 5, "tags": [], "variants": [], "score": 455, "order": 16}, {"id": "c076", "category": "計測・信号処理", "question": "標本化定理とは何ですか？", "answer": "最高周波数f_maxまでに帯域制限された信号は、標本化周波数f_sを2f_maxより大きく取れば、理想条件下で完全に復元できます。", "formula": "f_s > 2f_max", "followup": "", "pitfalls": "", "priority": "S", "source": "past", "frequency": 5, "tags": [], "variants": [], "score": 455, "order": 17}, {"id": "c060", "category": "ロボティクス", "question": "オイラー角とは何ですか？", "answer": "3次元の姿勢を、定めた順序で行う3回の軸回転の角度で表す方法です。回転順序により表現が異なり、特定姿勢でジンバルロックが生じます。", "formula": "", "followup": "例としてZYXオイラー角はヨー・ピッチ・ロールの順に表せますが、定義の確認が必要です。", "pitfalls": "", "priority": "S", "source": "past", "frequency": 4, "tags": [], "variants": [], "score": 445, "order": 18}, {"id": "c061", "category": "ロボティクス", "question": "ロボットのヤコビ行列は何を表しますか？", "answer": "関節速度q̇と手先の並進・角速度vの関係を表します。力の関係では、手先力Fと関節トルクτを τ=JᵀF で結びます。", "formula": "v=J(q)q̇,  τ=JᵀF", "followup": "", "pitfalls": "", "priority": "S", "source": "past", "frequency": 4, "tags": [], "variants": [], "score": 445, "order": 19}, {"id": "c003", "category": "数学・線形代数", "question": "行列が対角化できる条件は何ですか？", "answer": "n次正方行列が対角化可能である必要十分条件は、一次独立な固有ベクトルをn本もつことです。固有値がすべて異なれば十分条件として対角化できます。", "formula": "", "followup": "重複固有値があっても、各固有空間の次元が代数的重複度を満たせば対角化可能です。", "pitfalls": "A自身が正則である必要はありません。正則である必要があるのは固有ベクトルを並べたPです。", "priority": "S", "source": "past", "frequency": 4, "tags": [], "variants": [], "score": 445, "order": 20}, {"id": "c009", "category": "数学・線形代数", "question": "ヤコビ行列とは何ですか？", "answer": "多変数ベクトル値関数の各出力を各入力で偏微分して並べた行列です。入力の微小変化を出力の微小変化へ写す局所的な線形近似を表します。", "formula": "Jᵢⱼ=∂fᵢ/∂xⱼ,  Δy≈JΔx", "followup": "ロボティクスでは関節速度と手先速度を結びます。", "pitfalls": "", "priority": "S", "source": "past", "frequency": 4, "tags": [], "variants": ["ヤコビアンとは？", "ヤコビ行列行列とは？"], "score": 445, "order": 21}, {"id": "c035", "category": "材料力学・設計", "question": "応力とは何ですか？力との違いは何ですか？", "answer": "応力は物体内部のある面に作用する内力を、単位面積当たりで表した量です。力の単位はN、応力の単位はPa=N/m²で、同じ力でも断面積により応力は変わります。", "formula": "平均垂直応力 σ=N/A,  平均せん断応力 τ=V/A", "followup": "", "pitfalls": "", "priority": "S", "source": "past", "frequency": 4, "tags": [], "variants": [], "score": 445, "order": 22}, {"id": "c037", "category": "材料力学・設計", "question": "応力集中とは何ですか？", "answer": "穴、切欠き、段差など形状の不連続部で、局所応力が公称応力より大きくなる現象です。最大応力と公称応力の比を応力集中係数といいます。", "formula": "K_t=σ_max/σ_nom", "followup": "", "pitfalls": "", "priority": "S", "source": "past", "frequency": 4, "tags": [], "variants": [], "score": 445, "order": 23}, {"id": "c070", "category": "制御", "question": "フィードバック制御とは何ですか？", "answer": "出力を測定して目標値と比較し、その偏差に基づいて入力を調整する制御です。モデル誤差や外乱の影響を抑えられますが、設計が悪いと不安定化します。", "formula": "e=r−y", "followup": "", "pitfalls": "", "priority": "S", "source": "past", "frequency": 3, "tags": [], "variants": [], "score": 435, "order": 24}, {"id": "c078", "category": "計測・信号処理", "question": "標本化定理を満たさないと何が起こりますか？", "answer": "ナイキスト周波数を超える成分が低い周波数に折り返して見えるエイリアシングが起こり、元の信号を一意に復元できなくなります。", "formula": "", "followup": "対策は標本化周波数を上げるか、標本化前にアンチエイリアス用ローパスフィルタを入れることです。", "pitfalls": "", "priority": "S", "source": "past", "frequency": 3, "tags": [], "variants": [], "score": 435, "order": 25}, {"id": "c068", "category": "制御", "question": "ナイキスト線図とは何ですか？", "answer": "開ループ伝達関数G(jω)の周波数応答を、ωを変化させながら複素平面上に描いた軌跡です。閉ループ安定性や安定余裕の評価に使います。", "formula": "", "followup": "", "pitfalls": "", "priority": "S", "source": "past", "frequency": 2, "tags": [], "variants": [], "score": 425, "order": 26}, {"id": "c090", "category": "流体力学", "question": "非圧縮性ニュートン流体の運動方程式の名前と式を答えてください。", "answer": "ナビエ–ストークス方程式です。左辺は単位体積当たりの慣性項、右辺は圧力勾配、粘性項、体積力を表します。", "formula": "ρ(∂u/∂t+(u·∇)u)=−∇p+μ∇²u+ρf", "followup": "", "pitfalls": "", "priority": "S", "source": "past", "frequency": 2, "tags": [], "variants": [], "score": 425, "order": 27}, {"id": "c044", "category": "材料力学・設計", "question": "片持ち梁の先端集中荷重で、長さを2倍にすると先端たわみは何倍ですか？", "answer": "断面、材料、荷重が同じなら、先端たわみは長さの3乗に比例するため8倍です。", "formula": "δ=PL³/(3EI) ⇒ L→2Lでδ→8δ", "followup": "", "pitfalls": "", "priority": "S", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 415, "order": 28}, {"id": "c098", "category": "HI・触覚・VR", "question": "皮膚の主要な機械受容器を挙げてください。", "answer": "無毛部皮膚では、メルケル盤、マイスナー小体、パチニ小体、ルフィニ終末が代表です。順に持続圧・形状、低周波振動・滑り、高周波振動、皮膚伸展に関係します。", "formula": "", "followup": "速順応/遅順応、受容野の大小も説明できると強いです。", "pitfalls": "", "priority": "A", "source": "past", "frequency": 4, "tags": [], "variants": [], "score": 345, "order": 29}, {"id": "c026", "category": "機械力学・振動", "question": "慣性テンソルとは何ですか？", "answer": "三次元剛体の角速度と角運動量の関係を表す3×3の対称行列です。対角成分は各軸まわりの慣性モーメント、非対角成分は符号を含む慣性乗積です。", "formula": "L=Iω", "followup": "座標軸を慣性主軸に取ると慣性テンソルは対角化されます。", "pitfalls": "", "priority": "A", "source": "past", "frequency": 3, "tags": [], "variants": [], "score": 335, "order": 30}, {"id": "c016", "category": "統計", "question": "中心極限定理とは何ですか？", "answer": "独立同分布の確率変数の和または標本平均は、標本数が十分大きいと、元の分布によらず近似的に正規分布に従うという定理です。", "formula": "√n( X̄-μ )/σ → N(0,1)", "followup": "", "pitfalls": "標本平均が母平均そのものに近づくことは大数の法則です。中心極限定理は分布形の話です。", "priority": "A", "source": "past", "frequency": 3, "tags": [], "variants": [], "score": 335, "order": 31}, {"id": "c063", "category": "ロボティクス", "question": "ロボットアームの順運動学と移動ロボットの運動学はどう違いますか？", "answer": "ロボットアームでは関節角とリンク変換を連鎖して手先姿勢を求めます。移動ロボットでは車輪速度などから機体の位置・姿勢変化を求め、非ホロノミック拘束や滑りも考慮します。", "formula": "差動二輪例: v=r(ω_R+ω_L)/2,  θ̇=r(ω_R−ω_L)/L", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 2, "tags": [], "variants": [], "score": 325, "order": 32}, {"id": "c067", "category": "制御", "question": "代表的な安定判別法を挙げてください。", "answer": "極の直接確認、ラウス・フルビッツ判別、ナイキスト安定判別、ボード線図のゲイン余裕・位相余裕、状態空間では固有値の確認があります。", "formula": "", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 2, "tags": [], "variants": [], "score": 325, "order": 33}, {"id": "c010", "category": "数学・線形代数", "question": "ヤコビアンの行列式が0になることは何を意味しますか？", "answer": "正方ヤコビ行列なら det J=0 はランクが落ち、局所的に逆変換できない特異点であることを意味します。ロボットでは、ある手先方向に速度を出せない、または逆運動学が不安定になる状態です。", "formula": "det J=0（正方の場合） / rank(J)低下（一般の場合）", "followup": "", "pitfalls": "非正方行列では行列式ではなくランクで判定します。", "priority": "A", "source": "past", "frequency": 2, "tags": [], "variants": [], "score": 325, "order": 34}, {"id": "c039", "category": "材料力学・設計", "question": "ひずみとは何ですか？単位は何ですか？", "answer": "ひずみは変形量を元の寸法で規格化した量です。垂直ひずみは長さ変化を初期長さで割るため無次元です。", "formula": "ε=ΔL/L₀", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 2, "tags": [], "variants": [], "score": 325, "order": 35}, {"id": "c023", "category": "機械力学・振動", "question": "固有振動数を上げるにはどうすればよいですか？", "answer": "基本的には剛性を大きくするか質量を小さくします。梁では、材料のヤング率や断面二次モーメントを増やし、長さや密度を減らす方向です。", "formula": "ωₙ∝√(k/m)", "followup": "", "pitfalls": "単に「金属にする」では不十分で、剛性と質量の両方が変わる点を説明します。", "priority": "A", "source": "past", "frequency": 2, "tags": [], "variants": [], "score": 325, "order": 36}, {"id": "c024", "category": "機械力学・振動", "question": "共振を抑える方法を挙げてください。", "answer": "加振周波数と固有振動数を離す、減衰を増やす、剛性・質量を変えて固有振動数をずらす、動吸振器を付ける、入力源を絶縁する方法があります。", "formula": "", "followup": "防振は振動伝達を減らし、制振は構造自体の振動エネルギーを散逸・相殺します。", "pitfalls": "", "priority": "A", "source": "past", "frequency": 2, "tags": [], "variants": [], "score": 325, "order": 37}, {"id": "c088", "category": "流体力学", "question": "ニュートン流体とは何ですか？", "answer": "せん断応力が速度勾配、すなわちせん断ひずみ速度に比例し、その比例係数である粘度がせん断速度によらない流体です。", "formula": "τ=μ du/dy", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 2, "tags": [], "variants": [], "score": 325, "order": 38}, {"id": "c093", "category": "熱力学・伝熱", "question": "エンタルピーの定義を式で答えてください。", "answer": "エンタルピーHは内部エネルギーUと圧力pと体積Vの積の和です。比エンタルピーなら h=u+pv です。", "formula": "H=U+pV,  h=u+pv", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 2, "tags": [], "variants": [], "score": 325, "order": 39}, {"id": "c139", "category": "自分の経験", "question": "得意科目を聞かれたら、どう答えますか？", "answer": "科目名だけで終えず、得意な理由、代表的な式・概念、実験や設計で使った例を30秒で述べます。その後に深掘りされても答えられる範囲の科目を選びます。", "formula": "", "followup": "", "pitfalls": "有限要素法などを挙げるなら、弱形式・形状関数・連立方程式の解法まで準備します。", "priority": "A", "source": "past", "frequency": 2, "tags": [], "variants": [], "score": 325, "order": 40}, {"id": "c077", "category": "計測・信号処理", "question": "ナイキスト周波数とは何ですか？", "answer": "標本化周波数の半分 f_s/2 の周波数です。デジタル信号で一意に表現できる上限周波数に対応します。", "formula": "f_N=f_s/2", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 2, "tags": [], "variants": [], "score": 325, "order": 41}, {"id": "c079", "category": "計測・信号処理", "question": "量子化誤差とは何ですか？", "answer": "連続値を最も近い量子化レベルへ丸めることで生じる、真の値と量子化値の差です。一様量子化なら通常、誤差の大きさは量子化幅Δの半分以下です。", "formula": "|e_q|≤Δ/2", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 2, "tags": [], "variants": [], "score": 325, "order": 42}, {"id": "c084", "category": "計測・信号処理", "question": "フーリエ級数とフーリエ変換とは何ですか？", "answer": "フーリエ級数は周期信号を離散的な周波数の正弦波・複素指数関数の和で表します。フーリエ変換は非周期信号も含め、時間領域の信号を連続周波数成分へ分解します。", "formula": "", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 2, "tags": [], "variants": [], "score": 325, "order": 43}, {"id": "c085", "category": "計測・信号処理", "question": "高速フーリエ変換（FFT）とは何ですか？", "answer": "離散フーリエ変換DFTを効率よく計算するアルゴリズム群です。代表的には計算量をO(N²)からO(N log N)へ削減します。", "formula": "DFT: O(N²), FFT: O(N log N)", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 2, "tags": [], "variants": [], "score": 325, "order": 44}, {"id": "c048", "category": "FEM・数値解析", "question": "有限要素法では要素ごとにどのように微分方程式を簡略化しますか？", "answer": "未知場を節点値と形状関数の線形結合で近似し、重み付き残差法、特にガラーキン法で弱形式を作ります。各要素の剛性行列と荷重ベクトルを計算し、全体へ組み立てます。", "formula": "u≈Nq,  ∫wR dΩ=0,  要素方程式 kₑqₑ=fₑ", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 45}, {"id": "c052", "category": "FEM・数値解析", "question": "有限要素法のメリットとデメリットを説明してください。", "answer": "メリットは複雑形状、異種材料、多様な境界条件を扱いやすいことです。デメリットはメッシュやモデル化に依存し、計算量が大きく、結果の妥当性確認が必要なことです。", "formula": "", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 46}, {"id": "c053", "category": "FEM・数値解析", "question": "有限要素法で大規模な連立一次方程式を効率よく解く方法は？", "answer": "剛性行列の疎性・対称性・正定値性を利用します。直接法では疎行列用LUやCholesky分解、反復法では共役勾配法などを前処理付きで使います。", "formula": "", "followup": "", "pitfalls": "行基本変形を手計算する、だけでは大規模計算の工夫として不十分です。", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 47}, {"id": "c097", "category": "HI・触覚・VR", "question": "クロスモーダル知覚とは何ですか？", "answer": "ある感覚モダリティの情報が、別の感覚モダリティの知覚や判断に影響する現象です。例として視覚情報で物体の重さや触感の知覚が変わることがあります。", "formula": "", "followup": "", "pitfalls": "『別の知覚が必ず生起する』よりも『相互に影響する』と説明すると安全です。", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 48}, {"id": "c099", "category": "HI・触覚・VR", "question": "触覚にはどのような種類がありますか？", "answer": "皮膚感覚として圧・振動・伸展・温冷・痛みなどがあり、広義の触覚には筋・腱・関節から得る固有受容感覚や運動感覚も含まれます。", "formula": "", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 49}, {"id": "c105", "category": "HI・触覚・VR", "question": "VR酔いの主な原因は何ですか？", "answer": "視覚が示す運動と前庭感覚・固有感覚が示す運動の不一致、表示遅延、低フレームレート、不自然な加速度や視野運動などが主因と考えられます。", "formula": "", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 50}, {"id": "c106", "category": "HI・触覚・VR", "question": "VR酔いを減らす方法を挙げてください。", "answer": "遅延を減らし高フレームレートを保つ、急な加減速や回転を避ける、移動時に視野を狭める、固定した視覚基準を置く、短時間から慣らす方法があります。", "formula": "", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 51}, {"id": "c057", "category": "ロボティクス", "question": "運動学と動力学の違いは何ですか？", "answer": "運動学は力やトルクを直接考えず、位置・姿勢・速度・加速度の幾何学的関係を扱います。動力学は質量、慣性、力、トルクと運動の関係を扱います。", "formula": "", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 52}, {"id": "c062", "category": "ロボティクス", "question": "ロボットの特異点とは何ですか？", "answer": "ヤコビ行列のランクが低下し、手先が動ける方向を失う姿勢です。逆速度計算では関節速度が非常に大きくなるなど不安定になります。", "formula": "", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 53}, {"id": "c064", "category": "ロボティクス", "question": "移動ロボットの順運動学と逆運動学を説明してください。", "answer": "順運動学は車輪角速度から機体の並進速度・角速度を求めます。逆運動学は目標の機体速度から必要な各車輪角速度を求めます。", "formula": "", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 54}, {"id": "c069", "category": "制御", "question": "ナイキスト安定判別法を説明してください。", "answer": "開ループ伝達関数の右半平面極数Pと、ナイキスト線図が−1点を囲む回数Nから、閉ループの右半平面極数Zを関係づけて安定性を判定します。符号規約に注意し、Z=0なら安定です。", "formula": "代表的規約: N=Z−P（反時計回り正など、教科書の規約を確認）", "followup": "", "pitfalls": "囲み数の正負は規約で変わるため、P・Zとの関係を一貫して述べます。", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 55}, {"id": "c071", "category": "制御", "question": "フィードフォワード制御とは何ですか？", "answer": "目標値や測定可能な外乱から、モデルに基づいて必要な操作量を先回りして与える制御です。偏差が生じてから修正するのではなく、既知の影響を事前に補償します。", "formula": "", "followup": "通常はフィードバックと組み合わせて、速応性とロバスト性を両立します。", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 56}, {"id": "c073", "category": "制御", "question": "ボード線図とは何ですか？", "answer": "周波数を対数軸に取り、伝達関数のゲインと位相を周波数ごとに描く図です。帯域、共振、ゲイン余裕、位相余裕などを読み取れます。", "formula": "", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 57}, {"id": "c004", "category": "数学・線形代数", "question": "実対称行列の固有値と固有ベクトルにはどんな性質がありますか？", "answer": "実対称行列の固有値はすべて実数で、異なる固有値に属する固有ベクトルは互いに直交します。したがって直交行列で対角化できます。", "formula": "A=Aᵀ ⇒ QᵀAQ=D,  QᵀQ=I", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 58}, {"id": "c005", "category": "数学・線形代数", "question": "ベクトルや行列の一次独立・一次従属とは何ですか？", "answer": "ベクトル集合が一次独立とは、それらの線形結合が零ベクトルになる係数がすべて0の場合です。0でない係数の組が存在すれば一次従属です。", "formula": "c₁v₁+…+cₙvₙ=0 ⇒ c₁=…=cₙ=0", "followup": "正方行列では、列ベクトルが一次独立 ⇔ 行列式が0でない ⇔ 逆行列が存在します。", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 59}, {"id": "c007", "category": "数学・線形代数", "question": "線形変換で平面図形の面積はどう変わりますか？", "answer": "2次元の線形変換Aを施すと、面積は |det A| 倍になります。行列式の符号は向きの反転、絶対値は面積倍率を表します。", "formula": "S' = |det A| S", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 60}, {"id": "c036", "category": "材料力学・設計", "question": "せん断力とせん断応力とは何ですか？", "answer": "せん断力Vは、切断面に平行に働く内力の合力です。せん断応力τは、そのせん断力が断面内に分布した単位面積当たりの力です。", "formula": "平均 τ=V/A", "followup": "", "pitfalls": "せん断力はモーメントによって発生するもの、と限定しません。", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 61}, {"id": "c038", "category": "材料力学・設計", "question": "真応力と公称応力の違いは何ですか？", "answer": "公称応力は荷重を初期断面積で割り、真応力は荷重をその時点の実断面積で割ります。引張で断面が細くなると、通常は真応力の方が大きくなります。", "formula": "σ_n=P/A₀,  σ_t=P/A", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 62}, {"id": "c041", "category": "材料力学・設計", "question": "応力と変位の関係を説明してください。", "answer": "外力から内力・応力が生じ、材料の構成則により応力とひずみが関係し、ひずみを空間的に積分すると変位が得られます。線形弾性なら σ=Eε です。", "formula": "外力→応力,  σ=Eε,  ε=du/dx（1次元）", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 63}, {"id": "c042", "category": "材料力学・設計", "question": "主応力とは何ですか？", "answer": "ある点でせん断応力が0になる面に作用する垂直応力で、応力テンソルの固有値です。その面の法線方向が主方向です。", "formula": "det(σ−λI)=0", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 64}, {"id": "c043", "category": "材料力学・設計", "question": "不静定問題とは何ですか？", "answer": "力とモーメントのつり合い式だけでは未知反力や内力を一意に決められず、変形の適合条件と材料の構成則も必要な問題です。", "formula": "", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 65}, {"id": "c045", "category": "材料力学・設計", "question": "寸法公差とは何ですか？", "answer": "製作上許容される寸法のばらつきの範囲です。基準寸法に対する上の寸法許容差と下の寸法許容差で、最大許容寸法と最小許容寸法を定めます。", "formula": "公差=最大許容寸法−最小許容寸法", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 66}, {"id": "c028", "category": "機械力学・振動", "question": "角運動量の定義は何ですか？", "answer": "質点では位置ベクトルrと運動量pの外積 L=r×p です。剛体では一般に L=Iω ですが、Lとωが平行とは限りません。", "formula": "L=r×p,  剛体: L=Iω", "followup": "", "pitfalls": "Iw²は回転運動エネルギーの式と混同しています。回転エネルギーは(1/2)Iω²です。", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 67}, {"id": "c032", "category": "機械力学・振動", "question": "ダンパにはどのような種類があり、どう数式表現しますか？", "answer": "代表例は粘性ダンパ、クーロン摩擦、構造減衰です。粘性減衰力は速度に比例して F=−c ẋ、クーロン摩擦は運動方向と逆向きにほぼ一定で F=−F_c sgn(ẋ) です。", "formula": "粘性: F=−cẋ,  クーロン: F=−F_c sgn(ẋ)", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 68}, {"id": "c033", "category": "機械力学・振動", "question": "片持ち梁の先端に打撃力を加えたときの振動とフーリエ解析の関係を説明してください。", "answer": "短い打撃は広い周波数成分を含むインパルス入力とみなせます。入力と応答をフーリエ変換し、その比から周波数応答関数を求めると、固有振動数ではピークが現れます。", "formula": "H(ω)=Y(ω)/F(ω)", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 69}, {"id": "c091", "category": "流体力学", "question": "ナビエ–ストークス方程式の右辺3項は何を表しますか？", "answer": "−∇pは圧力による力、μ∇²uは粘性による運動量拡散、ρfは重力などの単位体積当たりの体積力です。", "formula": "", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 70}, {"id": "c094", "category": "熱力学・伝熱", "question": "流れている系で内部エネルギーに対応してよく用いる状態量は何ですか？", "answer": "エンタルピーです。流動仕事pvを内部エネルギーに加えた h=u+pv を用いると、開放系のエネルギー収支を表しやすくなります。", "formula": "h=u+pv", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 71}, {"id": "c095", "category": "熱力学・伝熱", "question": "フーリエの法則とは何ですか？", "answer": "熱伝導による熱流束は温度勾配に比例し、高温側から低温側へ流れることを表す法則です。", "formula": "q=−k∇T  （1次元: Q̇=−kA dT/dx）", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 72}, {"id": "c017", "category": "統計", "question": "統計的な有意差とは何ですか？", "answer": "帰無仮説のもとでは観測結果以上の差が生じにくいと判断され、設定した有意水準よりp値が小さい状態です。効果が大きい、実用上重要という意味とは限りません。", "formula": "p < α", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 73}, {"id": "c018", "category": "統計", "question": "有意水準とは何ですか？", "answer": "帰無仮説が正しいのに誤って棄却する第一種過誤を許容する確率の上限です。一般に5%などを事前に設定します。", "formula": "α=P(帰無仮説を棄却 | 帰無仮説が真)", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 74}, {"id": "c116", "category": "自分の経験", "question": "学部で行った実験を1分で説明してください。", "answer": "目的、装置、測定量、解析方法、結果、考察の順で説明します。例：スターリングエンジンの回転数・トルク等を測定し、出力や効率を評価した、というように自分の実験へ置き換えます。", "formula": "", "followup": "装置図を頭の中で説明できるよう、センサ名・サンプリング周期・誤差要因も準備します。", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 75}, {"id": "c081", "category": "計測・信号処理", "question": "同期検波とは何ですか？", "answer": "既知の基準信号と同じ周波数・位相の信号を測定信号に掛け、低域通過させることで、その周波数成分だけを高感度に取り出す方法です。ロックインアンプの原理です。", "formula": "x(t)×cos(ω₀t) → LPF", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": ["同期検定ってわかる？"], "score": 315, "order": 76}, {"id": "c083", "category": "計測・信号処理", "question": "ローパスフィルタとハイパスフィルタを説明してください。", "answer": "ローパスフィルタは低周波成分を通し高周波成分を減衰させます。ハイパスフィルタは高周波成分を通し低周波成分を減衰させます。", "formula": "", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 77}, {"id": "c086", "category": "計測・信号処理", "question": "AD変換したデータから周波数成分を求めるにはどうしますか？", "answer": "一定周期で標本化した時系列データに窓関数を適用し、DFTまたはFFTで周波数スペクトルを求めます。周波数分解能は観測時間、上限はナイキスト周波数で決まります。", "formula": "Δf=f_s/N=1/T", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 78}, {"id": "c136", "category": "計測・信号処理", "question": "サンプリング周期が10 msのとき、標本化周波数とナイキスト周波数はいくつですか？", "answer": "標本化周期Tₛ=0.01 sなので、標本化周波数は100 Hz、ナイキスト周波数は50 Hzです。", "formula": "fₛ=1/Tₛ=100 Hz,  f_N=fₛ/2=50 Hz", "followup": "", "pitfalls": "", "priority": "A", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 315, "order": 79}, {"id": "c131", "category": "ロボティクス", "question": "回転行列にはどのような性質がありますか？", "answer": "回転行列Rは直交行列で、RᵀR=I、det R=1を満たします。逆行列は転置行列です。", "formula": "RᵀR=I, detR=1, R⁻¹=Rᵀ", "followup": "", "pitfalls": "", "priority": "A", "source": "added", "frequency": 1, "tags": [], "variants": [], "score": 310, "order": 80}, {"id": "c124", "category": "制御", "question": "閉ループ伝達関数を答えてください。", "answer": "負帰還で前向き伝達関数G(s)、フィードバックH(s)なら、目標値から出力への閉ループ伝達関数は G/(1+GH) です。", "formula": "T(s)=G(s)/(1+G(s)H(s))", "followup": "", "pitfalls": "", "priority": "A", "source": "added", "frequency": 1, "tags": [], "variants": [], "score": 310, "order": 81}, {"id": "c125", "category": "制御", "question": "状態方程式と固有値の関係を説明してください。", "answer": "線形系 ẋ=Ax+Bu の自由応答はAの固有値で決まります。連続時間では全固有値の実部が負なら漸近安定です。", "formula": "ẋ=Ax+Bu,  y=Cx+Du", "followup": "", "pitfalls": "", "priority": "A", "source": "added", "frequency": 1, "tags": [], "variants": [], "score": 310, "order": 82}, {"id": "c121", "category": "材料力学・設計", "question": "断面二次モーメントとは何ですか？", "answer": "断面の面積が中立軸からどのように分布しているかを表し、梁の曲げにくさに関係する幾何学量です。材料特性ではありません。", "formula": "I=∫y²dA,  曲げ剛性=EI", "followup": "", "pitfalls": "", "priority": "A", "source": "added", "frequency": 1, "tags": [], "variants": [], "score": 310, "order": 83}, {"id": "c122", "category": "材料力学・設計", "question": "梁の曲げ応力の式を答えてください。", "answer": "オイラー・ベルヌーイ梁の線形曲げでは、中立軸から距離yの曲げ応力は σ=My/I です。", "formula": "σ=My/I", "followup": "", "pitfalls": "", "priority": "A", "source": "added", "frequency": 1, "tags": [], "variants": [], "score": 310, "order": 84}, {"id": "c123", "category": "材料力学・設計", "question": "梁のたわみに長さは何乗で効きますか？", "answer": "荷重条件で異なりますが、代表的な片持ち梁の先端集中荷重ではL³、等分布荷重ではL⁴に比例します。式を条件とセットで覚えます。", "formula": "先端集中荷重: δ=PL³/(3EI), 等分布: δ=wL⁴/(8EI)", "followup": "", "pitfalls": "", "priority": "A", "source": "added", "frequency": 1, "tags": [], "variants": [], "score": 310, "order": 85}, {"id": "c119", "category": "機械力学・振動", "question": "1自由度減衰振動系の運動方程式を書いてください。", "answer": "質量m、粘性減衰c、ばね定数k、外力f(t)なら、運動方程式は m ẍ+c ẋ+kx=f(t) です。", "formula": "m ẍ+c ẋ+kx=f(t)", "followup": "", "pitfalls": "", "priority": "A", "source": "added", "frequency": 1, "tags": [], "variants": [], "score": 310, "order": 86}, {"id": "c120", "category": "機械力学・振動", "question": "減衰比とは何ですか？", "answer": "実際の粘性減衰係数cを臨界減衰係数c_cで割った無次元量です。ζ<1で不足減衰、ζ=1で臨界減衰、ζ>1で過減衰です。", "formula": "ζ=c/c_c=c/(2√(mk))", "followup": "", "pitfalls": "", "priority": "A", "source": "added", "frequency": 1, "tags": [], "variants": [], "score": 310, "order": 87}, {"id": "c129", "category": "熱力学・伝熱", "question": "熱力学第一法則を説明してください。", "answer": "系の内部エネルギー変化は、系へ加えた熱から系が外部へした仕事を引いたものです。符号規約を明示します。", "formula": "ΔU=Q−W（系がした仕事を正とする規約）", "followup": "", "pitfalls": "", "priority": "A", "source": "added", "frequency": 1, "tags": [], "variants": [], "score": 310, "order": 88}, {"id": "c134", "category": "統計", "question": "p値とは何ですか？", "answer": "帰無仮説が正しいと仮定したとき、観測された統計量以上に極端な結果が得られる確率です。帰無仮説が正しい確率ではありません。", "formula": "", "followup": "", "pitfalls": "", "priority": "A", "source": "added", "frequency": 1, "tags": [], "variants": [], "score": 310, "order": 89}, {"id": "c117", "category": "自分の経験", "question": "使ったことのあるプログラミング言語と用途を説明してください。", "answer": "言語名だけでなく、何を入力し、どんな処理をし、何を出力したかを30秒で述べます。例：C/C++で数値計算や画像処理、Pythonで統計解析、C#とUnityでインタラクティブシステムを実装しました。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 2, "tags": [], "variants": [], "score": 225, "order": 90}, {"id": "c049", "category": "FEM・数値解析", "question": "重み付き残差法とは何ですか？", "answer": "近似解を微分方程式へ代入して生じる残差Rに重み関数wを掛け、領域全体で積分した値を0にすることで近似解を決める方法です。", "formula": "∫Ω w R dΩ=0", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 91}, {"id": "c050", "category": "FEM・数値解析", "question": "ガラーキン法とは何ですか？", "answer": "重み付き残差法の一種で、重み関数に近似解で使う基底関数と同じ関数を選ぶ方法です。有限要素法の標準的な定式化に用いられます。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 92}, {"id": "c051", "category": "FEM・数値解析", "question": "有限差分法と有限要素法の違いは何ですか？", "answer": "有限差分法は微分を格子点間の差分で近似します。有限要素法は領域を要素分割し、弱形式と形状関数で場を近似するため、複雑形状や境界条件に対応しやすいです。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 93}, {"id": "c054", "category": "FEM・数値解析", "question": "連続体力学とは何ですか？", "answer": "物質を原子の集合ではなく、密度・変位・応力などが空間内で連続的に分布する媒体として扱い、保存則と構成則で変形や流動を記述する力学です。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 94}, {"id": "c055", "category": "FEM・数値解析", "question": "トポロジー最適化とは何ですか？", "answer": "設計領域内の材料配置そのものを設計変数とし、体積などの制約下で剛性最大化やコンプライアンス最小化を行う構造最適化です。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 95}, {"id": "c100", "category": "HI・触覚・VR", "question": "触覚受容器は身体に一様に分布していますか？", "answer": "一様ではありません。指先や口唇など識別能力が高い部位では受容器密度が高く受容野が小さく、背中などでは密度が低く受容野が大きい傾向があります。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 96}, {"id": "c101", "category": "HI・触覚・VR", "question": "ファントムセンセーションとは何ですか？", "answer": "皮膚上の離れた2点を適切な強度で同時刺激すると、その間の刺激していない位置にも単一の触覚が感じられる錯覚です。強度比を変えると知覚位置を移動できます。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": ["phantom sensationとは？"], "score": 215, "order": 97}, {"id": "c102", "category": "HI・触覚・VR", "question": "VR、AR、MRの違いを説明してください。", "answer": "VRは主に人工環境へ没入させます。ARは現実世界にデジタル情報を重畳します。MRは現実と仮想の物体が空間的に整合し、相互作用する複合環境を指します。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 98}, {"id": "c103", "category": "HI・触覚・VR", "question": "運動主体感とは何ですか？", "answer": "自分がある行為を起こし、その結果を生じさせているという主観的な感覚です。運動指令の予測と実際の感覚フィードバックの一致などが関係します。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 99}, {"id": "c104", "category": "HI・触覚・VR", "question": "ラッセルの円環モデルとは何ですか？", "answer": "感情を、快−不快の感情価と、覚醒−非覚醒の覚醒度という2軸上の円環として配置するモデルです。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 100}, {"id": "c107", "category": "HI・触覚・VR", "question": "ベクションとは何ですか？", "answer": "実際には身体が動いていないのに、広い視野の視覚運動によって自分が動いているように感じる自己運動感覚です。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 101}, {"id": "c108", "category": "HI・触覚・VR", "question": "モーショントラッキングの原理を説明してください。", "answer": "カメラ、IMU、外部マーカ、深度センサなどから位置・姿勢を推定します。VRではIMUの高周波な相対運動推定と、カメラの絶対位置補正をセンサフュージョンする方法が一般的です。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 102}, {"id": "c072", "category": "制御", "question": "根軌跡法とは何ですか？", "answer": "フィードバック系のゲインなどのパラメータを変えたとき、閉ループ極が複素平面上をどのように移動するかを描く方法です。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 103}, {"id": "c074", "category": "制御", "question": "カットオフ周波数はどのように決めますか？", "answer": "通したい信号帯域と除去したい雑音帯域、必要な応答速度を基に決めます。ボード線図や実測スペクトルを用い、減衰量・位相遅れとのトレードオフを確認します。", "formula": "", "followup": "", "pitfalls": "状態方程式を必ず同定しなければ決められないわけではありません。", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 104}, {"id": "c109", "category": "医療・生体計測", "question": "ストレス反応を測定する手法を挙げてください。", "answer": "主観評価に加え、心拍・心拍変動、皮膚電気活動、血圧、呼吸、瞳孔径、唾液コルチゾールや唾液アミラーゼ、脳波などがあります。", "formula": "", "followup": "交感神経・副交感神経、測定遅延、個人差を考慮します。", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 105}, {"id": "c111", "category": "情報・電子・物理", "question": "半導体とは何ですか？", "answer": "電気伝導性が導体と絶縁体の中間にあり、温度・光・不純物添加などでキャリア濃度と導電率を大きく制御できる物質です。価電子帯と伝導帯の間に比較的小さなバンドギャップがあります。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 106}, {"id": "c012", "category": "数学・微分方程式", "question": "特殊解とは何ですか？", "answer": "一般解の任意定数を初期条件・境界条件で定めて得る特定の解、または非同次方程式に対する一つの特解を指します。文脈によって意味を確認します。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 107}, {"id": "c013", "category": "数学・微分方程式", "question": "微分方程式の特異解とは何ですか？", "answer": "微分方程式を満たすが、一般解の任意定数をどのように選んでも得られない解です。一般解の包絡線として現れることがあります。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 108}, {"id": "c014", "category": "数学・微分方程式", "question": "代表的な微分方程式の型を挙げてください。", "answer": "常微分方程式と偏微分方程式、線形と非線形、同次と非同次、階数による分類があります。一次線形、変数分離形、二階定係数線形方程式などが代表例です。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 109}, {"id": "c006", "category": "数学・線形代数", "question": "基底ベクトルとは何ですか？", "answer": "ベクトル空間を張り、かつ一次独立なベクトルの組です。空間内の任意のベクトルを、その基底の線形結合として一意に表せます。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 110}, {"id": "c008", "category": "数学・線形代数", "question": "デルタ関数とは何ですか？", "answer": "ディラックのデルタ関数は、x=0以外で0、全区間での積分が1となる一般化関数です。積分の中で値を取り出す性質をもち、理想的なインパルスを表します。", "formula": "∫δ(x)dx=1,  ∫f(x)δ(x-a)dx=f(a)", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 111}, {"id": "c040", "category": "材料力学・設計", "question": "変位の単位は何ですか？", "answer": "変位は位置の変化なので長さの次元をもち、SI単位はメートルです。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 112}, {"id": "c046", "category": "材料力学・設計", "question": "公差という概念はなぜ必要ですか？", "answer": "加工には必ずばらつきがあるため、機能・組立性・互換性を満たす許容範囲を定める必要があります。公差を厳しくしすぎると製造コストが上がります。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 113}, {"id": "c027", "category": "機械力学・振動", "question": "慣性主軸とは何ですか？", "answer": "慣性テンソルの固有ベクトル方向です。この軸に座標を取ると慣性乗積が0になり、慣性テンソルが対角化されます。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 114}, {"id": "c029", "category": "機械力学・振動", "question": "回転モーメント、すなわちトルクとは何ですか？", "answer": "力が物体を回転させる作用の大きさで、基準点から作用点への位置ベクトルrと力Fの外積です。角運動量の時間変化にも等しいです。", "formula": "τ=r×F=dL/dt", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 115}, {"id": "c030", "category": "機械力学・振動", "question": "ジャイロモーメントとは何ですか？", "answer": "回転体の角運動量の向きを変えるときに生じるモーメントです。高速回転するロータの軸を歳差角速度Ωで回すと、概ね τ=Ω×L で表されます。", "formula": "τ=dL/dt=Ω×L", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 116}, {"id": "c089", "category": "流体力学", "question": "カルマン渦とは何ですか？", "answer": "円柱などの鈍い物体の後流で、左右交互に周期的に放出される渦列です。放出周波数はストローハル数で整理されます。", "formula": "St=fD/U", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 117}, {"id": "c096", "category": "熱力学・伝熱", "question": "熱力学の重要な要素を2つ挙げて説明してください。", "answer": "質問が広いため、例えば『状態量と熱力学法則』と答えます。状態量には内部エネルギー・エンタルピー・エントロピーなどがあり、第一法則はエネルギー保存、第二法則は過程の方向性とエントロピー増大を表します。", "formula": "", "followup": "", "pitfalls": "元の質問文が曖昧なので、面接では『第一・第二法則でしょうか』と確認してから答えても構いません。", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 118}, {"id": "c019", "category": "統計", "question": "t検定とは何ですか？", "answer": "母分散が未知の状況で、平均の差が偶然のばらつきで説明できるかをt分布に基づいて検定する方法です。1標本、対応あり、独立2標本などがあります。", "formula": "", "followup": "データの対応関係、正規性、等分散性などに応じて検定法を選びます。", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 119}, {"id": "c020", "category": "統計", "question": "統計はどのようなときに使いますか？", "answer": "実験や観測データのばらつきを定量化し、母集団の性質を推定したり、条件間の差や関係が偶然かを判断したりするときに使います。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 120}, {"id": "c118", "category": "自分の経験", "question": "数値解析のプログラミング経験を説明してください。", "answer": "連立方程式、常微分方程式、最適化、有限要素法、信号処理、統計解析のうち実際に行ったものを、アルゴリズム・データ・検証方法とともに説明します。", "formula": "", "followup": "", "pitfalls": "統計解析だけを挙げる場合も、数値計算として何を実装・検証したかを具体化します。", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 121}, {"id": "c080", "category": "計測・信号処理", "question": "量子化分解能とビット数の関係を説明してください。", "answer": "nビットのAD変換では通常2ⁿ段階で表現します。入力範囲をV_FSとすると量子化幅は概ね V_FS/2ⁿ で、ビット数が1増えると幅は半分になります。", "formula": "段階数=2ⁿ,  Δ≈V_FS/2ⁿ", "followup": "", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": ["量子化能率とは？"], "score": 215, "order": 122}, {"id": "c082", "category": "計測・信号処理", "question": "『計測の原理の応用』ではどのような内容を説明できますか？", "answer": "センサによる物理量の電気信号化、増幅・フィルタリング、AD変換、標本化・量子化、雑音低減、校正、不確かさ評価など、測定系全体の原理を説明します。", "formula": "", "followup": "自身の授業・実験に合わせて、具体例を1つ準備してください。", "pitfalls": "", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 123}, {"id": "c137", "category": "計測・信号処理", "question": "量子化効率とは何ですか？", "answer": "文脈により定義が異なりますが、量子化後の信号品質を量子化雑音との比で表す意味で使われることがあります。面接では用語の定義を確認し、量子化幅・量子化誤差・信号対量子化雑音比を説明します。", "formula": "SQNR=P_signal/P_quantization-noise", "followup": "", "pitfalls": "授業固有の用語である可能性があるため、断定せず定義を確認します。", "priority": "B", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 215, "order": 124}, {"id": "c133", "category": "HI・触覚・VR", "question": "速順応型と遅順応型受容器の違いは何ですか？", "answer": "速順応型は刺激の開始・終了や変化に強く応答し、振動や滑り検出に向きます。遅順応型は刺激が続く間も応答し、持続圧や形状、皮膚伸展を符号化します。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "added", "frequency": 1, "tags": [], "variants": [], "score": 210, "order": 125}, {"id": "c132", "category": "ロボティクス", "question": "オイラー角とクォータニオンの違いは何ですか？", "answer": "オイラー角は3変数で直感的ですが回転順序依存とジンバルロックがあります。単位クォータニオンは4変数に制約をもち、特異性がなく補間に向きます。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "added", "frequency": 1, "tags": [], "variants": [], "score": 210, "order": 126}, {"id": "c128", "category": "流体力学", "question": "ストローハル数とは何ですか？", "answer": "非定常な渦放出などの代表周波数を整理する無次元数です。", "formula": "St=fL/U", "followup": "", "pitfalls": "", "priority": "B", "source": "added", "frequency": 1, "tags": [], "variants": [], "score": 210, "order": 127}, {"id": "c130", "category": "熱力学・伝熱", "question": "エントロピーとは何ですか？", "answer": "可逆過程で微小な熱δQ_revを温度Tで割った変化量dS=δQ_rev/Tで定義される状態量です。孤立系ではエントロピーは減少しません。", "formula": "dS=δQ_rev/T,  ΔS_isolated≥0", "followup": "", "pitfalls": "", "priority": "B", "source": "added", "frequency": 1, "tags": [], "variants": [], "score": 210, "order": 128}, {"id": "c135", "category": "統計", "question": "相関と因果の違いは何ですか？", "answer": "相関は2変数が共に変化する統計的関係、因果は一方の操作が他方の変化を生む関係です。交絡や逆因果があるため、相関だけでは因果を示せません。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "added", "frequency": 1, "tags": [], "variants": [], "score": 210, "order": 129}, {"id": "c126", "category": "計測・信号処理", "question": "計測における精度と分解能の違いは何ですか？", "answer": "精度は測定値が真値にどれだけ近いか、分解能は識別できる最小変化量です。分解能が高くても校正誤差が大きければ精度は高くありません。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "added", "frequency": 1, "tags": [], "variants": [], "score": 210, "order": 130}, {"id": "c127", "category": "計測・信号処理", "question": "センサの校正とは何ですか？", "answer": "既知の標準量を入力し、センサ出力との対応関係を求め、感度・オフセット・非線形性などを補正することです。", "formula": "", "followup": "", "pitfalls": "", "priority": "B", "source": "added", "frequency": 1, "tags": [], "variants": [], "score": 210, "order": 131}, {"id": "c138", "category": "FEM・数値解析", "question": "有限要素法におけるヤコビ行列は何に使いますか？", "answer": "基準要素の局所座標と実要素の物理座標の写像に使います。微分や積分を座標変換するとき、ヤコビ行列とその行列式が現れます。", "formula": "dΩ=|det J| dξ,  ∇_x=N_{,ξ}J⁻¹", "followup": "", "pitfalls": "", "priority": "B", "source": "added", "frequency": 0, "tags": [], "variants": [], "score": 200, "order": 132}, {"id": "c092", "category": "流体力学", "question": "非圧縮性流体の連続の式は何ですか？", "answer": "質量保存則から速度場の発散が0になります。", "formula": "∇·u=0", "followup": "", "pitfalls": "", "priority": "B", "source": "added", "frequency": 0, "tags": [], "variants": [], "score": 200, "order": 133}, {"id": "c110", "category": "情報・電子・物理", "question": "関数型言語とは何ですか？", "answer": "計算を関数の評価として記述し、状態変更や副作用を抑えるプログラミング言語・パラダイムです。高階関数、再帰、不変データなどをよく用います。", "formula": "", "followup": "", "pitfalls": "", "priority": "C", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 115, "order": 134}, {"id": "c112", "category": "情報・電子・物理", "question": "機械学習とは何ですか？", "answer": "データから規則や予測モデルを学習し、明示的に全てのルールを書かずに分類・回帰・生成・制御などを行う手法です。", "formula": "", "followup": "", "pitfalls": "", "priority": "C", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 115, "order": 135}, {"id": "c113", "category": "情報・電子・物理", "question": "プラズモンとは何ですか？", "answer": "金属などの自由電子集団の密度振動を量子化した準粒子です。表面に局在するものは表面プラズモンと呼ばれ、光と結合して表面プラズモンポラリトンを形成します。", "formula": "", "followup": "", "pitfalls": "", "priority": "C", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 115, "order": 136}, {"id": "c114", "category": "情報・電子・物理", "question": "量子性とは何ですか？", "answer": "重ね合わせ、量子化、波動粒子二重性、不確定性、もつれなど、古典力学では説明できない量子系特有の性質を指します。", "formula": "", "followup": "", "pitfalls": "", "priority": "C", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 115, "order": 137}, {"id": "c115", "category": "情報・電子・物理", "question": "光電効果を説明してください。", "answer": "物質に光を当てると電子が放出される現象です。電子の最大運動エネルギーは光の強度ではなく周波数で決まり、しきい周波数が存在します。", "formula": "K_max=hν−φ", "followup": "", "pitfalls": "", "priority": "C", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 115, "order": 138}, {"id": "c015", "category": "数学・特殊関数", "question": "ガンマ関数とは何ですか？", "answer": "階乗を実数・複素数へ拡張する関数です。正の実数sに対し Γ(s)=∫₀∞x^(s-1)e^(-x)dx と定義され、正整数nで Γ(n)=(n-1)! となります。", "formula": "Γ(s)=∫₀∞x^(s-1)e^(-x)dx,  Γ(n)=(n-1)!", "followup": "", "pitfalls": "", "priority": "C", "source": "past", "frequency": 1, "tags": [], "variants": [], "score": 115, "order": 139}];
+const KEY = "utokyo_oral_exam_progress_v1";
+let progress = loadProgress();
+let queue = [];
+let qIndex = 0;
+let answerShown = false;
+let shuffleMode = false;
+let mock = {cards:[], index:0, correct:0, timer:null, remaining:0, revealed:false};
+
+function loadProgress(){
+  try{return JSON.parse(localStorage.getItem(KEY)) || {cards:{}, sessions:0};}
+  catch(e){return {cards:{}, sessions:0};}
+}
+function saveProgress(){localStorage.setItem(KEY, JSON.stringify(progress)); updateStats();}
+function pFor(id){
+  if(!progress.cards[id]) progress.cards[id]={seen:0,lastRating:null,mastery:0,interval:0,due:0,correct:0};
+  return progress.cards[id];
+}
+function todayEnd(){const d=new Date(); d.setHours(23,59,59,999); return d.getTime();}
+function categoryList(){return [...new Set(CARDS.map(c=>c.category))].sort((a,b)=>a.localeCompare(b,"ja"));}
+function fillCategories(){
+  const ids=["categoryFilter","browseCategory","mockCategory"];
+  ids.forEach(id=>{
+    const el=document.getElementById(id);
+    el.innerHTML='<option value="all">すべての分野</option>'+categoryList().map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
+  });
+}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
+function toast(msg){
+  const t=document.getElementById("toast"); t.textContent=msg;t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),1600);
+}
+function updateStats(){
+  const ps=Object.values(progress.cards);
+  document.getElementById("statTotal").textContent=CARDS.length;
+  document.getElementById("statSeen").textContent=ps.filter(p=>p.seen>0).length;
+  document.getElementById("statMastered").textContent=ps.filter(p=>p.mastery>=2.5).length;
+  document.getElementById("statDue").textContent=CARDS.filter(c=>{const p=progress.cards[c.id];return p&&p.seen>0&&p.due<=todayEnd();}).length;
+}
+function studyScore(c){
+  const p=pFor(c.id), now=Date.now();
+  const newBonus=p.seen===0?100000:0;
+  const dueBonus=p.seen>0&&p.due<=now?120000:0;
+  const overdue=p.due?Math.min(10000,Math.max(0,(now-p.due)/86400000)*50):0;
+  const weak=(3-p.mastery)*1000;
+  return newBonus+dueBonus+overdue+weak+c.score;
+}
+function buildQueue(shuffle=false){
+  const cat=document.getElementById("categoryFilter").value;
+  const pri=document.getElementById("priorityFilter").value;
+  const src=document.getElementById("sourceFilter").value;
+  const due=document.getElementById("dueOnly").checked;
+  queue=CARDS.filter(c=>
+    (cat==="all"||c.category===cat) &&
+    (pri==="all"||c.priority===pri) &&
+    (src==="all"||c.source===src) &&
+    (!due||(pFor(c.id).seen>0&&pFor(c.id).due<=todayEnd()))
+  );
+  if(shuffle){
+    queue.sort(()=>Math.random()-.5);
+  }else{
+    queue.sort((a,b)=>studyScore(b)-studyScore(a));
+  }
+  qIndex=0;answerShown=false;progress.sessions=(progress.sessions||0)+1;saveProgress();renderStudy();
+}
+function renderStudy(){
+  const root=document.getElementById("studyContent");
+  if(!queue.length){
+    root.innerHTML='<div class="empty"><h2>該当する問題がありません</h2><p>条件を変更して、学習を開始してください。</p></div>';return;
+  }
+  if(qIndex>=queue.length){
+    root.innerHTML=`<div class="empty"><h2>この学習セットは完了です</h2><p>${queue.length}問を確認しました。</p><button class="primary" onclick="buildQueue(false)">もう一度始める</button></div>`;return;
+  }
+  const c=queue[qIndex], p=pFor(c.id);
+  const pct=Math.round((qIndex/queue.length)*100);
+  root.innerHTML=`
+    <div class="card-head">
+      <div class="chips">
+        <span class="chip ${c.priority.toLowerCase()}">優先度 ${c.priority}</span>
+        <span class="chip">${esc(c.category)}</span>
+        <span class="chip ${c.source==="past"?"past":""}">${c.source==="past"?"過去問":"追加問題"}</span>
+        ${c.frequency?`<span class="chip">出現記録 ${c.frequency}</span>`:""}
+      </div>
+      <div class="counter">${qIndex+1} / ${queue.length}</div>
+    </div>
+    <div class="progressbar"><div style="width:${pct}%"></div></div>
+    <div class="question">${esc(c.question)}</div>
+    <div class="prompt-actions">
+      <button class="primary" id="revealBtn">答えを表示</button>
+      <button class="secondary" onclick="speakCurrent()">🔊 読み上げ</button>
+      <button class="ghost" onclick="skipCard()">スキップ</button>
+    </div>
+    <div id="answerPanel" class="answer ${answerShown?"":"hidden"}">
+      <h3>30秒回答</h3><p>${esc(c.answer)}</p>
+      ${c.formula?`<div class="box formula"><b>式：</b> ${esc(c.formula)}</div>`:""}
+      ${c.followup?`<div class="box follow"><b>追質問への補足：</b> ${esc(c.followup)}</div>`:""}
+      ${c.pitfalls?`<div class="box pitfall"><b>誤答注意：</b> ${esc(c.pitfalls)}</div>`:""}
+      ${c.variants?.length?`<div class="box variants"><b>過去問の別表現：</b> ${c.variants.map(esc).join(" ／ ")}</div>`:""}
+      <div class="rates">
+        <button class="rate r0" onclick="rateCard(0)">1　知らない</button>
+        <button class="rate r1" onclick="rateCard(1)">2　あやしい</button>
+        <button class="rate r2" onclick="rateCard(2)">3　言えた</button>
+        <button class="rate r3" onclick="rateCard(3)">4　完璧</button>
+      </div>
+      <p style="font-size:12px;color:var(--muted)">学習回数 ${p.seen} ／ 現在の定着度 ${p.mastery.toFixed(1)}</p>
+    </div>`;
+  document.getElementById("revealBtn").onclick=()=>{
+    answerShown=true;document.getElementById("answerPanel").classList.remove("hidden");document.getElementById("revealBtn").disabled=true;
+  };
+}
+function rateCard(r){
+  if(!answerShown)return;
+  const c=queue[qIndex],p=pFor(c.id),now=Date.now();
+  p.seen+=1;p.lastRating=r;p.mastery=p.seen===1?r:(p.mastery*.7+r*.3);
+  if(r===0){p.interval=0;p.due=now+5*60*1000; queue.push(c);}
+  if(r===1){p.interval=Math.max(1,Math.round((p.interval||1)*1.2));p.due=now+p.interval*86400000;}
+  if(r===2){p.interval=Math.max(3,Math.round((p.interval||1)*2));p.due=now+p.interval*86400000;p.correct+=1;}
+  if(r===3){p.interval=Math.max(7,Math.round((p.interval||2)*3));p.due=now+p.interval*86400000;p.correct+=1;}
+  saveProgress();qIndex++;answerShown=false;renderStudy();
+}
+function skipCard(){qIndex++;answerShown=false;renderStudy();}
+function speakCurrent(){
+  if(!("speechSynthesis" in window)||!queue[qIndex])return;
+  speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(queue[qIndex].question);u.lang="ja-JP";speechSynthesis.speak(u);
+}
+function switchView(id){
+  document.querySelectorAll(".view").forEach(v=>v.hidden=v.id!==id);
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.view===id));
+  if(id==="browseView")renderBrowse();
+}
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>switchView(t.dataset.view));
+
+function browseFiltered(){
+  const term=document.getElementById("browseSearch").value.trim().toLowerCase();
+  const cat=document.getElementById("browseCategory").value;
+  const pri=document.getElementById("browsePriority").value;
+  return CARDS.filter(c=>{
+    const hay=[c.question,c.answer,c.formula,c.followup,c.pitfalls,c.category,...(c.variants||[])].join(" ").toLowerCase();
+    return (!term||hay.includes(term))&&(cat==="all"||c.category===cat)&&(pri==="all"||c.priority===pri);
+  });
+}
+function renderBrowse(){
+  const rows=browseFiltered();
+  document.getElementById("browseBody").innerHTML=rows.map(c=>{
+    const p=pFor(c.id);
+    return `<tr>
+      <td class="rank-col">${c.order}</td>
+      <td class="priority-col"><span class="badge">${c.priority}</span></td>
+      <td class="category-col">${esc(c.category)}</td>
+      <td class="question-col">${esc(c.question)}</td>
+      <td class="answer-col">${esc(c.answer)}</td>
+      <td class="formula-col detail-col">${c.formula?esc(c.formula):"—"}</td>
+      <td class="follow-col detail-col">${c.followup?esc(c.followup):"—"}</td>
+      <td class="pitfall-col detail-col">${c.pitfalls?esc(c.pitfalls):"—"}</td>
+      <td class="source-col">${c.source==="past"?"過去問":"追加"}</td>
+      <td class="mastery-col">${p.mastery.toFixed(1)}</td>
+    </tr>`;
+  }).join("");
+}
+function toggleDetails(id){document.getElementById("d-"+id).classList.toggle("open");}
+["browseSearch","browseCategory","browsePriority"].forEach(id=>document.getElementById(id).addEventListener("input",renderBrowse));
+
+function weightedSample(arr,n){
+  const pool=[...arr],res=[];
+  while(pool.length&&res.length<n){
+    const weights=pool.map(c=>({S:8,A:5,B:2,C:1}[c.priority]*(c.source==="past"?1.4:1)));
+    const total=weights.reduce((a,b)=>a+b,0);let x=Math.random()*total,idx=0;
+    for(;idx<pool.length;idx++){x-=weights[idx];if(x<=0)break;}
+    res.push(pool.splice(Math.min(idx,pool.length-1),1)[0]);
+  }return res;
+}
+function startMock(){
+  const count=+document.getElementById("mockCount").value;
+  const cat=document.getElementById("mockCategory").value;
+  const src=document.getElementById("mockSource").value;
+  const pool=CARDS.filter(c=>(cat==="all"||c.category===cat)&&(src==="all"||c.source===src));
+  mock.cards=weightedSample(pool,count);mock.index=0;mock.correct=0;
+  document.getElementById("mockSetup").hidden=true;document.getElementById("mockResult").hidden=true;document.getElementById("mockRun").hidden=false;
+  renderMockQuestion();
+}
+function renderMockQuestion(){
+  clearInterval(mock.timer);
+  if(mock.index>=mock.cards.length){finishMock();return;}
+  mock.revealed=false;mock.remaining=+document.getElementById("mockTime").value;
+  const c=mock.cards[mock.index],root=document.getElementById("mockRun");
+  root.innerHTML=`<div class="card-head"><div class="chips"><span class="chip ${c.priority.toLowerCase()}">優先度 ${c.priority}</span><span class="chip">${esc(c.category)}</span></div><div class="timer" id="timer">${mock.remaining}</div></div>
+  <div class="progressbar"><div style="width:${(mock.index/mock.cards.length)*100}%"></div></div>
+  <div class="counter">第 ${mock.index+1} 問 / ${mock.cards.length}</div>
+  <div class="mock-question">${esc(c.question)}</div>
+  <button class="primary" onclick="revealMock()">回答を確認</button>
+  <button class="secondary" onclick="speakMock()">🔊 読み上げ</button>
+  <div id="mockAnswer" class="answer hidden"></div>`;
+  mock.timer=setInterval(()=>{
+    mock.remaining--;const t=document.getElementById("timer");if(!t)return;
+    t.textContent=mock.remaining;t.classList.toggle("low",mock.remaining<=5);
+    if(mock.remaining<=0)revealMock();
+  },1000);
+}
+function speakMock(){
+  if(!("speechSynthesis" in window)||!mock.cards[mock.index])return;
+  speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(mock.cards[mock.index].question);u.lang="ja-JP";speechSynthesis.speak(u);
+}
+function revealMock(){
+  if(mock.revealed)return;mock.revealed=true;clearInterval(mock.timer);
+  const c=mock.cards[mock.index],a=document.getElementById("mockAnswer");
+  a.classList.remove("hidden");a.innerHTML=`<h3>模範回答</h3><p>${esc(c.answer)}</p>
+  ${c.formula?`<div class="box formula"><b>式：</b>${esc(c.formula)}</div>`:""}
+  ${c.pitfalls?`<div class="box pitfall"><b>注意：</b>${esc(c.pitfalls)}</div>`:""}
+  <div class="rates" style="grid-template-columns:1fr 1fr"><button class="rate r0" onclick="markMock(false)">答えられなかった</button><button class="rate r2" onclick="markMock(true)">答えられた</button></div>`;
+}
+function markMock(ok){
+  const c=mock.cards[mock.index],p=pFor(c.id);p.seen++;p.lastRating=ok?2:0;p.mastery=p.seen===1?(ok?2:0):(p.mastery*.7+(ok?2:0)*.3);
+  p.due=Date.now()+(ok?3*86400000:5*60*1000);if(ok){mock.correct++;p.correct++;}
+  saveProgress();mock.index++;renderMockQuestion();
+}
+function finishMock(){
+  clearInterval(mock.timer);document.getElementById("mockRun").hidden=true;
+  const r=document.getElementById("mockResult");r.hidden=false;
+  const pct=Math.round(mock.correct/mock.cards.length*100);
+  r.innerHTML=`<div class="mock-score"><h2>模試終了</h2><strong>${mock.correct} / ${mock.cards.length}</strong><p>正答率 ${pct}%</p><button class="primary" onclick="backMock()">条件を変えて再挑戦</button></div>`;
+}
+function backMock(){document.getElementById("mockResult").hidden=true;document.getElementById("mockSetup").hidden=false;}
+
+function download(name,text,type){
+  const blob=new Blob([text],{type});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href);
+}
+document.getElementById("exportProgress").onclick=()=>download("oral_exam_progress.json",JSON.stringify(progress,null,2),"application/json");
+document.getElementById("importProgress").onchange=e=>{
+  const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{progress=JSON.parse(r.result);saveProgress();renderStudy();toast("進捗を読み込みました");}catch(err){alert("読み込めないJSONです");}};r.readAsText(f);
+};
+document.getElementById("resetProgress").onclick=()=>{
+  if(confirm("学習進捗をすべて削除しますか？")){progress={cards:{},sessions:0};saveProgress();buildQueue(false);}
+};
+let compactTable=false;
+document.getElementById("toggleCompact").onclick=()=>{
+  compactTable=!compactTable;
+  document.querySelector(".qa-table").classList.toggle("compact",compactTable);
+  document.getElementById("toggleCompact").textContent=compactTable?"詳細表示":"簡潔表示";
+};
+document.getElementById("printTable").onclick=()=>{
+  switchView("browseView");
+  window.print();
+};
+document.getElementById("exportCsv").onclick=()=>{
+  const rows=browseFiltered(),cols=["順位","優先度","分野","質問","回答","式","補足","注意","出典"];
+  const csv=[cols,...rows.map(c=>[c.order,c.priority,c.category,c.question,c.answer,c.formula,c.followup,c.pitfalls,c.source])].map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\r\n");
+  download("filtered_question_bank.csv","\ufeff"+csv,"text/csv;charset=utf-8");
+};
+
+document.getElementById("startStudy").onclick=()=>buildQueue(false);
+document.getElementById("shuffleStudy").onclick=()=>buildQueue(true);
+document.getElementById("startMock").onclick=startMock;
+document.addEventListener("keydown",e=>{
+  if(document.activeElement?.matches("input,select"))return;
+  if(!document.getElementById("studyView").hidden){
+    if(e.code==="Space"){e.preventDefault();const b=document.getElementById("revealBtn");if(b)b.click();}
+    if(answerShown&&["1","2","3","4"].includes(e.key))rateCard(+e.key-1);
+    if(e.key.toLowerCase()==="s")speakCurrent();
+  }
+});
+
+function isIOS(){
+  return /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+    (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1);
+}
+function isStandalone(){
+  return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone===true;
+}
+function updateInstallTip(){
+  const tip=document.getElementById("installTip");
+  if(tip) tip.hidden=!(isIOS() && !isStandalone());
+}
+if("serviceWorker" in navigator && location.protocol.startsWith("http")){
+  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+}
+updateInstallTip();
+fillCategories();updateStats();buildQueue(false);
+</script>
+</body>
+</html>
