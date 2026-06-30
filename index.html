@@ -301,7 +301,7 @@ button{min-height:44px}
     <p>「知らない」は同じ学習回の後半へ戻し、「あやしい」は短い間隔、「言えた」「完璧」は徐々に間隔を広げます。進捗はこのブラウザ内に自動保存されます。</p>
   </section>
 
-  <div class="footer">単一HTMLで動作します。インターネット接続は不要です。</div>
+  <div class="footer">単一HTMLで動作します。修正版 v3（キャッシュ無効）</div>
 </div>
 <div id="toast" class="toast"></div>
 
@@ -403,7 +403,7 @@ function renderStudy(){
       ${c.formula?`<div class="box formula"><b>式：</b> ${esc(c.formula)}</div>`:""}
       ${c.followup?`<div class="box follow"><b>追質問への補足：</b> ${esc(c.followup)}</div>`:""}
       ${c.pitfalls?`<div class="box pitfall"><b>誤答注意：</b> ${esc(c.pitfalls)}</div>`:""}
-      ${c.variants?.length?`<div class="box variants"><b>過去問の別表現：</b> ${c.variants.map(esc).join(" ／ ")}</div>`:""}
+      ${(c.variants && c.variants.length)?`<div class="box variants"><b>過去問の別表現：</b> ${c.variants.map(esc).join(" ／ ")}</div>`:""}
       <div class="rates">
         <button class="rate r0" onclick="rateCard(0)">1　知らない</button>
         <button class="rate r1" onclick="rateCard(1)">2　あやしい</button>
@@ -552,7 +552,7 @@ document.getElementById("printTable").onclick=()=>{
 };
 document.getElementById("exportCsv").onclick=()=>{
   const rows=browseFiltered(),cols=["順位","優先度","分野","質問","回答","式","補足","注意","出典"];
-  const csv=[cols,...rows.map(c=>[c.order,c.priority,c.category,c.question,c.answer,c.formula,c.followup,c.pitfalls,c.source])].map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\r\n");
+  const csv=[cols,...rows.map(c=>[c.order,c.priority,c.category,c.question,c.answer,c.formula,c.followup,c.pitfalls,c.source])].map(r=>r.map(v=>`"${String(v == null ? "" : v).replace(/"/g,'""')}"`).join(",")).join("\r\n");
   download("filtered_question_bank.csv","\ufeff"+csv,"text/csv;charset=utf-8");
 };
 
@@ -560,7 +560,7 @@ document.getElementById("startStudy").onclick=()=>buildQueue(false);
 document.getElementById("shuffleStudy").onclick=()=>buildQueue(true);
 document.getElementById("startMock").onclick=startMock;
 document.addEventListener("keydown",e=>{
-  if(document.activeElement?.matches("input,select"))return;
+  if((document.activeElement && document.activeElement.matches("input,select")))return;
   if(!document.getElementById("studyView").hidden){
     if(e.code==="Space"){e.preventDefault();const b=document.getElementById("revealBtn");if(b)b.click();}
     if(answerShown&&["1","2","3","4"].includes(e.key))rateCard(+e.key-1);
@@ -579,11 +579,17 @@ function updateInstallTip(){
   const tip=document.getElementById("installTip");
   if(tip) tip.hidden=!(isIOS() && !isStandalone());
 }
-if("serviceWorker" in navigator && location.protocol.startsWith("http")){
-  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
-}
+
 updateInstallTip();
-fillCategories();updateStats();buildQueue(false);
+try{
+  fillCategories();
+  updateStats();
+  buildQueue(false);
+}catch(err){
+  console.error(err);
+  document.body.insertAdjacentHTML("afterbegin",
+    '<div style="position:fixed;z-index:99999;left:8px;right:8px;top:8px;background:#fff1ef;border:2px solid #b42318;padding:12px;border-radius:12px;color:#7a1b14;font-weight:700">初期化エラー：'+esc(err.message || err)+'</div>');
+}
 </script>
 </body>
 </html>
